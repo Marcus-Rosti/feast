@@ -5,10 +5,9 @@
 The Trino offline store provides support for reading [TrinoSources](../data-sources/trino.md).
 * Entity dataframes can be provided as a SQL query or can be provided as a Pandas dataframe. A Pandas dataframes will be uploaded to Trino as a table in order to complete join operations.
 
-## Disclaimer
+## Testing & Stability
 
-The Trino offline store does not achieve full test coverage.
-Please do not assume complete stability.
+The Trino offline store is covered by unit tests and automated integration tests running against a live Trino engine (validating point-in-time joins, dataset persistence, batch window retrieval, on-demand feature views, and full SQL pushdown quality monitoring).
 
 ## Getting started
 In order to use this offline store, you'll need to run `pip install 'feast[trino]'`. You can then run `feast init`, then swap out `feature_store.yaml` with the below example to connect to Trino.
@@ -106,7 +105,7 @@ Below is a matrix indicating which functionality is supported by `TrinoRetrieval
 | export as Spark dataframe                             | no    |
 | local execution of Python-based on-demand transforms  | yes   |
 | remote execution of Python-based on-demand transforms | no    |
-| persist results in the offline store                  | no    |
+| persist results in the offline store                  | yes   |
 | preview the query plan before execution               | yes   |
 | read partitioned data                                 | yes   |
 

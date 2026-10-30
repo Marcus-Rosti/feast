@@ -304,7 +304,12 @@ class TrinoRetrievalJob(RetrievalJob):
             raise ValueError(
                 f"The storage object is not a `SavedDatasetTrinoStorage` but is instead a {type(storage)}"
             )
-        self.to_trino(destination_table=storage.trino_options.table)
+        destination_table = storage.trino_options.table
+        if allow_overwrite:
+            self._client.execute_query(
+                query_text=f"DROP TABLE IF EXISTS {destination_table}"
+            )
+        self.to_trino(destination_table=destination_table)
 
     @property
     def metadata(self) -> Optional[RetrievalMetadata]:

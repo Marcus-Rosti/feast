@@ -5,10 +5,9 @@
 Trino data sources are Trino tables or views.
 These can be specified either by a table reference or a SQL query.
 
-## Disclaimer
+## Testing & Stability
 
-The Trino data source does not achieve full test coverage.
-Please do not assume complete stability.
+The Trino data source is validated via unit and automated integration tests running against a live Trino cluster.
 
 ## Examples
 

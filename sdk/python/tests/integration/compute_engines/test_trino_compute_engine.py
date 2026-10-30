@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 from typing import Any, Dict
 from unittest.mock import MagicMock
 
@@ -23,6 +22,9 @@ from feast.infra.compute_engines.trino.job import TrinoDAGRetrievalJob
 from feast.infra.offline_stores.contrib.trino_offline_store.connectors.upload import (
     upload_pandas_dataframe_to_trino,
 )
+from feast.infra.offline_stores.contrib.trino_offline_store.tests.data_source import (
+    trino_container,  # noqa: F401
+)
 from feast.infra.offline_stores.contrib.trino_offline_store.trino import (
     TrinoOfflineStoreConfig,
 )
@@ -36,56 +38,9 @@ from feast.transformation.trino_transformation import TrinoTransformation
 from feast.types import Float32, Int32, Int64, String
 from feast.value_type import ValueType
 
-docker_available = False
-try:
-    import docker
-    from testcontainers.core.container import DockerContainer
-    from testcontainers.core.waiting_utils import wait_for_logs
-
-    try:
-        _docker = docker.from_env()
-        _docker.ping()
-        docker_available = True
-    except Exception:
-        pass
-except ImportError:
-    pass
-
-_requires_docker = pytest.mark.skipif(
-    not docker_available,
-    reason="Docker is not available or not running. Start Docker daemon to run Trino integration tests.",
-)
-
 
 @pytest.fixture(scope="module")
-def trino_container():
-    """Start a real Trino container using the memory catalog for integration tests."""
-    catalog_dir = (
-        Path(__file__).parents[3]
-        / "feast"
-        / "infra"
-        / "offline_stores"
-        / "contrib"
-        / "trino_offline_store"
-        / "tests"
-        / "catalog"
-    )
-    container = (
-        DockerContainer("trinodb/trino:483")
-        .with_volume_mapping(str(catalog_dir.resolve()), "/etc/catalog/")
-        .with_volume_mapping(str(catalog_dir.resolve()), "/etc/trino/catalog/")
-        .with_exposed_ports("8080")
-    )
-    container.start()
-    try:
-        wait_for_logs(container=container, predicate="SERVER STARTED", timeout=60)
-        yield container
-    finally:
-        container.stop()
-
-
-@pytest.fixture(scope="module")
-def trino_server_info(trino_container) -> Dict[str, Any]:
+def trino_server_info(trino_container) -> Dict[str, Any]:  # noqa: F811
     host = trino_container.get_container_host_ip()
     port = int(trino_container.get_exposed_port("8080"))
     return {
@@ -125,7 +80,6 @@ def driver_entity():
     )
 
 
-@_requires_docker
 @pytest.mark.integration
 class TestTrinoComputeEngineIntegration:
     """Integration test suite executing real queries against a live Trino cluster."""

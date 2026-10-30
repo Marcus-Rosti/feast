@@ -58,6 +58,6 @@ Below is a matrix indicating which `RetrievalJob`s support what functionality.
 || export as Spark dataframe                             | no  | no  | yes | no  | no  | yes | no  | no  | no  | no  |
 || local execution of Python-based on-demand transforms  | yes | yes | yes | yes | yes | no  | yes | yes | yes | yes |
 || remote execution of Python-based on-demand transforms | no  | no  | no  | no  | no  | no  | no  | no  | no  | no  |
-|| persist results in the offline store                  | yes | yes | yes | yes | yes | yes | no  | yes | yes | yes |
+|| persist results in the offline store                  | yes | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 || preview the query plan before execution               | yes | yes | yes | yes | yes | yes | yes | no  | yes | yes |
 || read partitioned data                                 | yes | yes | yes | yes | yes | yes | yes | yes | yes | yes |

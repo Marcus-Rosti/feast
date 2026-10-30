@@ -355,7 +355,11 @@ You can run `make test-python-universal-spark` to run all tests against the Spar
 Not all tests are passing yet
 
 #### (Contrib) Running tests for Trino offline store
-You can run `make test-python-universal-trino` to run all tests against the Trino offline store. (Note: you'll have to run `make install-python-dependencies-dev` first)
+You can run the dedicated Trino offline store and monitoring integration test suite using Docker:
+```bash
+uv run pytest sdk/python/tests/integration/offline_store/test_trino_offline_store.py --integration
+```
+You can also run `make test-python-universal-trino` to run universal tests against the Trino offline store. (Note: you'll have to run `make install-python-dependencies-dev` first)
 
 #### (Contrib) Running tests for Postgres offline store
 You can run `test-python-universal-postgres-offline` to run all tests against the Postgres offline store. (Note: you'll have to run `make install-python-dependencies-dev` first)

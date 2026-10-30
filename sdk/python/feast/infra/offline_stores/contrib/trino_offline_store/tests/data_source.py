@@ -1,3 +1,4 @@
+import functools
 import pathlib
 import uuid
 from typing import Dict, List, Optional
@@ -25,24 +26,41 @@ from tests.universal.feature_repos.universal.data_source_creator import (
 )
 
 
+@functools.cache
+def docker_is_available() -> bool:
+    try:
+        import docker
+
+        client = docker.from_env()
+        try:
+            client.ping()
+        finally:
+            client.close()
+        return True
+    except Exception:
+        return False
+
+
 @pytest.fixture(scope="session")
 def trino_container():
-    current_file = pathlib.Path(__file__).parent.resolve()
-    catalog_dir = current_file.parent.joinpath("catalog")
+    if not docker_is_available():
+        pytest.skip(
+            "Docker is not available or not running. Start Docker daemon to run Trino integration tests."
+        )
+
+    catalog_dir = pathlib.Path(__file__).parent.resolve() / "catalog"
     container = (
-        DockerContainer("trinodb/trino:376")
-        .with_volume_mapping(catalog_dir, "/etc/catalog/")
+        DockerContainer("trinodb/trino:483")
+        .with_volume_mapping(str(catalog_dir), "/etc/trino/catalog/")
         .with_exposed_ports("8080")
     )
 
     container.start()
-
-    log_string_to_wait_for = "SERVER STARTED"
-    wait_for_logs(container=container, predicate=log_string_to_wait_for, timeout=30)
-
-    yield container
-
-    container.stop()
+    try:
+        wait_for_logs(container=container, predicate="SERVER STARTED", timeout=60)
+        yield container
+    finally:
+        container.stop()
 
 
 class TrinoSourceCreator(DataSourceCreator):
